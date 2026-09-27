@@ -8,19 +8,23 @@ AgentLint — a Python CLI + Streamlit tool that audits AI coding-agent instruct
 
 ## Stack
 
-- Python 3.11+, pytest, Streamlit, Typer or argparse, PyYAML, `tomllib` (stdlib)
+- Python 3.11+, pytest, Streamlit, Typer, PyYAML, `tomllib` (stdlib)
 - Optional: Pydantic, `rapidfuzz` — avoid LangChain
+- Install: `pip install -e ".[dev]"` (dev extras required for pytest)
 
 ## Commands
 
 ```bash
-pip install -e .              # install in editable mode
-pytest                        # run all tests
-pytest tests/unit/            # run unit tests only
-pytest tests/integration/     # run integration tests
-streamlit run app.py          # launch UI
-agentlint scan <repo-path>    # primary CLI entry point
-agentlint demo                # runs against bundled demo repos
+pip install -e ".[dev]"          # install with dev deps (pytest, pytest-cov)
+pytest                           # run all tests
+pytest tests/unit/               # run unit tests only
+pytest tests/integration/        # run integration tests
+pytest tests/unit/test_models.py # run a single test file
+pytest tests/unit/test_models.py::test_finding_defaults  # run a single test
+streamlit run app.py             # launch UI
+agentlint scan <repo-path>       # primary CLI entry point
+agentlint demo                   # runs against bundled demo repos
+python -m agentlint.cli demo     # equivalent without installed entry point
 ```
 
 ## Implementation Order (CRITICAL)
@@ -44,9 +48,9 @@ agentlint/          # Python package
   validation/       # re-verifies after repair; runs commands with timeout + allowlist
   ui/               # Streamlit view models only (no business logic)
 demo_repos/         # three packaged sample repos used in tests and demo mode
-tests/unit/         # co-located per-module unit tests
+tests/unit/         # per-module unit tests
 tests/integration/  # tests using demo_repos/
-tests/golden/       # snapshot comparisons of normalized reports
+tests/golden/       # snapshot comparisons of normalized reports (JSON, regenerate intentionally)
 .agentlint/         # runtime output: scan.json, evidence.json, findings.json, policy.yaml, repair-plan.md, verification.json
 .bob/               # Bob skills, custom mode, slash commands
 ```
@@ -56,7 +60,7 @@ tests/golden/       # snapshot comparisons of normalized reports
 - Every phase ends with passing tests before the phase is marked complete in `PROGRESS.md`
 - `PROGRESS.md` must be kept updated with phase checklist, commands run, and known issues
 - Commit message format: `feat: <phase description>` (see `AgentLintplan.md §21 Rule 4`)
-- Use dataclasses (or minimal Pydantic) for all domain models; keep external deps minimal
+- Use dataclasses (no external ORM) for all domain models; `from __future__ import annotations` on every module
 - Config lives in `.agentlint/config.yaml`; extra instruction paths are user-defined there
 - Command runner **must** have a timeout and an allowlist — no unbounded shell execution
 - Writes outside allowed paths (`.agentlint/`, instruction files) must be rejected

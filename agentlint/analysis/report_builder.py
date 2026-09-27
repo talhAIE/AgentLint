@@ -1,6 +1,11 @@
 """Report builder — Phase 4.
 
 Formats findings for human-readable CLI output.
+
+Phase 10 adds:
+    format_ci_failure_block(findings, threshold_severity)
+        Produces the machine-friendly block printed to stdout when
+        ``agentlint scan --fail-on-severity <level>`` detects drift.
 """
 
 from __future__ import annotations
@@ -50,3 +55,55 @@ def format_findings_summary(findings: list[Finding]) -> str:
         lines.append(f"  {ftype} ({label}): {count}")
 
     return "\n".join(lines)
+
+
+def format_ci_failure_block(
+    findings: list[Finding],
+    threshold_severity: str,
+) -> str:
+    """Return a human-readable CI failure block for high-severity findings.
+
+    Only findings whose severity is at or above *threshold_severity* are
+    included.  The output format matches the spec example::
+
+        AgentLint: FAIL
+
+        High-severity instruction drift detected.
+
+        AGENTS.md says: npm
+        Repository evidence: pnpm
+
+    One detail line is emitted per qualifying finding using the finding's
+    ``title`` field (which is always a concise, human-readable sentence).
+
+    Args:
+        findings:           All findings at or above the threshold (pre-filtered).
+        threshold_severity: The severity level used (e.g. ``"high"``).
+
+    Returns:
+        A formatted multi-line string ready for ``typer.echo``.
+    """
+    lines: list[str] = [
+        "AgentLint: FAIL",
+        "",
+        f"{threshold_severity.capitalize()}-severity instruction drift detected.",
+    ]
+    for f in findings:
+        lines.append("")
+        lines.append(f.title)
+
+    return "\n".join(lines)
+
+
+def format_ci_pass_block() -> str:
+    """Return a one-line CI pass message.
+
+    Printed by ``agentlint scan --fail-on-severity`` when no qualifying
+    findings are present::
+
+        AgentLint: PASS
+
+    Returns:
+        A single-line string ready for ``typer.echo``.
+    """
+    return "AgentLint: PASS"

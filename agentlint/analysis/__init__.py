@@ -3,6 +3,9 @@
 Public entry points:
     run_deterministic_checks(rules, evidence)   → list[Finding]
     write_findings_json(repo_path, findings)    → Path
+
+Phase 10 adds:
+    SEVERITY_ORDER  — exported dict used by the CI exit-code logic in cli.py
 """
 
 from __future__ import annotations
@@ -21,7 +24,8 @@ from agentlint.analysis.duplicates import detect_f05_duplicates
 from agentlint.models import Finding, InstructionRule, RepositoryEvidence
 
 # Severity sort order (lower = more severe → sort ascending for highest first).
-_SEVERITY_ORDER: dict[str, int] = {
+# Exported as SEVERITY_ORDER so callers (cli.py, report_builder.py) can import it.
+SEVERITY_ORDER: dict[str, int] = {
     "critical": 0,
     "high": 1,
     "medium": 2,
@@ -72,7 +76,7 @@ def run_deterministic_checks(
 
     # Sort by severity (most severe first), then by finding type for stability.
     all_findings.sort(
-        key=lambda f: (_SEVERITY_ORDER.get(f.severity, 99), f.type)
+        key=lambda f: (SEVERITY_ORDER.get(f.severity, 99), f.type)
     )
 
     _assign_finding_ids(all_findings)
@@ -113,4 +117,4 @@ def write_findings_json(
     return findings_json_path
 
 
-__all__ = ["run_deterministic_checks", "write_findings_json"]
+__all__ = ["run_deterministic_checks", "write_findings_json", "SEVERITY_ORDER"]

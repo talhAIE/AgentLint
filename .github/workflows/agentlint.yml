@@ -1,8 +1,72 @@
-# TODO: Phase 10 — AgentLint pull-request check workflow.
-# This file is a placeholder. Implementation begins in Phase 10.
+# AgentLint pull-request check — Phase 10
 #
-# Planned behavior:
-#   - Trigger on pull_request
-#   - Run `agentlint scan .` against the PR branch
-#   - Post findings as a PR comment
-#   - Fail the check if critical findings are detected
+# Runs on pull requests that touch instruction files, package/config files, or
+# .bob/** so that accidental instruction drift is caught before merge.
+#
+# Primary gate:   agentlint scan . --fail-on-severity high
+#   Exits 1 and prints a human-readable drift report when any critical or
+#   high-severity finding is detected.  The job fails and appears in the PR
+#   status checks with the drift details visible in the Actions log.
+#
+# Secondary step: agentlint validate . --skip-commands
+#   Runs the four verification layers (structural, policy-evidence, command,
+#   consistency).  Uses continue-on-error because policy.yaml is only present
+#   after `agentlint policy` has been run; in a clean checkout this step is
+#   informational only.
+
+name: AgentLint
+
+on:
+  pull_request:
+    paths:
+      # Instruction files
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - ".github/copilot-instructions.md"
+      - "cursor.rules"
+      - ".cursorrules"
+      - ".bob/**"
+      # Package manager / project config files
+      - "package.json"
+      - "package-lock.json"
+      - "yarn.lock"
+      - "pnpm-lock.yaml"
+      - "pyproject.toml"
+      - "requirements*.txt"
+      - "Pipfile"
+      - "Pipfile.lock"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "go.mod"
+      - "go.sum"
+
+jobs:
+  agentlint-check:
+    name: AgentLint instruction-drift check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install AgentLint
+        run: pip install -e ".[dev]"
+
+      - name: Scan for instruction drift
+        # Fails (exit 1) if any critical or high-severity finding is detected.
+        # The human-readable drift report is printed to the Actions log.
+        run: agentlint scan . --fail-on-severity high
+
+      - name: Verify consistency (informational)
+        # Requires policy.yaml to be present; continues even if absent.
+        run: agentlint validate . --skip-commands
+        continue-on-error: true
+
+      - name: Summary
+        if: always()
+        run: echo "AgentLint check complete."

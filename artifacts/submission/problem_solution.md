@@ -1,0 +1,5 @@
+**The Problem**
+As teams increasingly adopt AI coding agents, repositories become littered with uncoordinated instruction files (like `AGENTS.md`, `CLAUDE.md`, or `.cursor/rules/*.md`). These files inevitably drift from reality. One agent might be told to use `npm` and `Jest`, while the repository actually migrated to `pnpm` and `Vitest`. When agents act on conflicting or stale instructions, they introduce bugs, break workflows, and waste developer time correcting them.
+
+**The Solution**
+AgentLint solves this by treating the repository as evidence. It scans for all agent instructions, normalizes their rules, and then checks them against the actual facts in the repository (such as lockfiles, dependencies, and configuration files). AgentLint surfaces cross-file conflicts, detects invalid commands, and flags stale paths. Beyond just reporting errors, AgentLint uses IBM Bob 2.0's semantic reasoning to propose a unified, canonical Agent Contract (`policy.yaml`) and a human-reviewed repair plan to fix the conflicting instructions. This ensures that every AI agent on your team operates with the same repository truth.

@@ -184,7 +184,7 @@ class TestCleanRepo:
             if f.severity in ("critical", "high")
         ]
         assert high_or_critical == [], (
-            f"Expected no critical/high findings, got: "
+            "Expected no critical/high findings, got: "
             + ", ".join(f"{f.type}:{f.severity} — {f.title}" for f in high_or_critical)
         )
 
@@ -200,6 +200,18 @@ class TestCleanRepo:
 
 
 class TestGoldenSnapshotInconsistent:
+    """Golden regression guard for inconsistent-js-repo.
+
+    Compares the live deterministic scan output against the golden snapshot
+    stored in ``tests/golden/inconsistent-js-repo.json``.  This class is
+    the primary regression guard that prevents detector changes from
+    silently dropping expected finding types or reducing finding counts.
+
+    The golden file defines:
+      - ``minimum_finding_count``: lower bound on total findings
+      - ``required_types``: finding types that must always appear
+      - ``findings``: per-entry type/severity/title substring assertions
+    """
     @pytest.fixture(scope="class")
     def golden(self) -> dict:
         return json.loads((_GOLDEN_DIR / "inconsistent-js-repo.json").read_text(encoding="utf-8"))
@@ -241,6 +253,12 @@ class TestGoldenSnapshotInconsistent:
 
 
 class TestGoldenSnapshotSingleAgent:
+    """Golden regression guard for single-agent-stale-repo.
+
+    Proves AgentLint works with only one instruction file (CLAUDE.md).
+    Compares live output against ``tests/golden/single-agent-stale-repo.json``
+    to ensure stale-instruction detection is stable across changes.
+    """
     @pytest.fixture(scope="class")
     def golden(self) -> dict:
         return json.loads((_GOLDEN_DIR / "single-agent-stale-repo.json").read_text(encoding="utf-8"))
@@ -277,6 +295,12 @@ class TestGoldenSnapshotSingleAgent:
 
 
 class TestGoldenSnapshotClean:
+    """Golden regression guard for clean-repo.
+
+    Asserts that a repository with correct, aligned instructions produces
+    zero critical/high findings.  This is the "no false positives" guard
+    defined by ``tests/golden/clean-repo.json``.
+    """
     @pytest.fixture(scope="class")
     def golden(self) -> dict:
         return json.loads((_GOLDEN_DIR / "clean-repo.json").read_text(encoding="utf-8"))
