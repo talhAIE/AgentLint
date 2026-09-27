@@ -26,6 +26,9 @@ COPY --from=frontend-build /app/frontend/dist /app/frontend/dist
 # Install the agentlint package in editable mode
 RUN pip install -e .
 
+# Pre-generate the demo repository artifacts so they are available in production
+RUN agentlint demo
+
 # Expose the port Render uses
 EXPOSE 8000
 
