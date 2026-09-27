@@ -79,7 +79,7 @@ export default function App() {
               <button 
                 onClick={async () => {
                   try {
-                    await fetch('http://localhost:8000/demo/load/inconsistent-js-repo', { method: 'POST' });
+                    await fetch('/demo/load/inconsistent-js-repo', { method: 'POST' });
                     window.location.reload();
                   } catch (e) {
                     console.error(e);
