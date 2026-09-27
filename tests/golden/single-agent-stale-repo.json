@@ -1,0 +1,10 @@
+{
+  "description": "Expected findings for single-agent-stale-repo (Demo B)",
+  "minimum_finding_count": 2,
+  "required_types": ["F02", "F03"],
+  "no_high_severity": false,
+  "findings": [
+    { "type": "F02", "severity": "high", "title_contains": "package_manager" },
+    { "type": "F03", "severity": "medium", "title_contains": "src/services/" }
+  ]
+}

@@ -1,0 +1,53 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Streamlit
+.streamlit/
+
+# AgentLint runtime output
+.agentlint/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# MyPy
+.mypy_cache/

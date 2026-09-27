@@ -1,0 +1,7 @@
+{
+  "description": "Expected findings for clean-repo (Demo C) — correct instructions, no high-severity findings",
+  "minimum_finding_count": 0,
+  "required_types": [],
+  "no_high_severity": true,
+  "findings": []
+}

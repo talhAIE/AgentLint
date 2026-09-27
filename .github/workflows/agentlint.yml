@@ -1,0 +1,8 @@
+# TODO: Phase 10 — AgentLint pull-request check workflow.
+# This file is a placeholder. Implementation begins in Phase 10.
+#
+# Planned behavior:
+#   - Trigger on pull_request
+#   - Run `agentlint scan .` against the PR branch
+#   - Post findings as a PR comment
+#   - Fail the check if critical findings are detected

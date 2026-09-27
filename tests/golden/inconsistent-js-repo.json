@@ -1,0 +1,16 @@
+{
+  "description": "Expected findings for inconsistent-js-repo (Demo A)",
+  "minimum_finding_count": 7,
+  "required_types": ["F01", "F02", "F03", "F04", "F05"],
+  "no_high_severity": false,
+  "findings": [
+    { "type": "F01", "severity": "high", "title_contains": "package_manager" },
+    { "type": "F01", "severity": "high", "title_contains": "test_framework" },
+    { "type": "F02", "severity": "high", "title_contains": "package_manager" },
+    { "type": "F02", "severity": "high", "title_contains": "test_framework" },
+    { "type": "F03", "severity": "medium", "title_contains": "not found in repository" },
+    { "type": "F04", "severity": "medium", "title_contains": "test:unit" },
+    { "type": "F04", "severity": "medium", "title_contains": "deploy" },
+    { "type": "F05", "severity": "low", "title_contains": "identical rules found" }
+  ]
+}
